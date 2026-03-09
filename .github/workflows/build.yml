@@ -21,6 +21,15 @@ jobs:
       with:
         python-version: '3.11'
     
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          autoconf libtool pkg-config \
+          libncurses5-dev libncursesw5-dev \
+          cmake libffi-dev libssl-dev \
+          automake zip unzip
+    
     - name: Install Buildozer
       run: pip install buildozer "cython<3.0"
     
@@ -33,7 +42,11 @@ jobs:
         key: buildozer-${{ hashFiles('buildozer.spec') }}
     
     - name: Build APK
-      run: buildozer android debug
+      run: buildozer android debug 2>&1 | tee build.log
+    
+    - name: Show error log
+      if: failure()
+      run: tail -n 200 build.log
     
     - uses: actions/upload-artifact@v4
       if: success()
