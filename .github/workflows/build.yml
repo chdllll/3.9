@@ -19,7 +19,10 @@ jobs:
         python-version: '3.10'
     - run: sudo apt-get update && sudo apt-get install -y autoconf libtool pkg-config libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev automake zip unzip libltdl-dev
     - run: pip install buildozer cython==0.29.36
-    - run: buildozer android debug
+    - name: Build APK with C extensions
+      env:
+        PIP_NO_BINARY: "charset_normalizer,chardet,cchardet"
+      run: buildozer android debug
     - uses: actions/upload-artifact@v4
       with:
         name: apk
